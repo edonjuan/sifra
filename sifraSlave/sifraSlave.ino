@@ -15,6 +15,7 @@
 #define SELECT 15
 #define LRED 4
 #define LGRE 5
+#define LBLU 16
 
 // SW
 #define MASTER    3822969472  //alfa
@@ -50,14 +51,12 @@ void setup() {
   Serial.begin(9600); //Iniciamos la comunicación  serial
   delay(10);
 
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, !LOW);
-  
+  pinMode(LBLU, OUTPUT);
+  digitalWrite(LBLU, !LOW);
   pinMode(LRED, OUTPUT);
   digitalWrite(LRED, LOW);
   pinMode(LGRE, OUTPUT);
   digitalWrite(LGRE, LOW);
-  
   pinMode(BUZZER, OUTPUT);
   digitalWrite(BUZZER, LOW);
   pinMode(SELECT, INPUT);
@@ -77,15 +76,42 @@ void setup() {
   userScheduler.addTask(taskWatchDog);
   userScheduler.addTask(taskIndicator);
 
-  taskReadRFID.enable();
-  taskSendMessage.disable();  
-  taskWatchDog.enable();  
+  taskWatchDog.enable(); 
+  taskReadRFID.disable();
+  taskSendMessage.disable();   
   taskIndicator.disable();
 }
 
 void loop() {
   mesh.update();
 }
+
+void wtd(){
+  static short watchCount, first;
+  char strBuf[40];
+
+  if(mesh.isConnected(MASTER))
+  {
+    digitalWrite(LBLU, !HIGH);
+    watchCount = 0;
+    if(!first){
+      taskReadRFID.enable();
+      Serial.println("Master online");
+      first = 1;
+    }    
+  }
+  else
+  {
+    digitalWrite(LBLU, !LOW);
+    taskReadRFID.disable();
+    first = 0;
+    watchCount++;
+    if(watchCount>=wtd_rest) ESP.reset();
+    sprintf(strBuf, "Master not found! Watchdog Count: %d of %d", watchCount, wtd_rest);
+    Serial.println(strBuf);    
+  }
+}
+
 
 void readRFID() {
   if ( mfrc522.PICC_IsNewCardPresent()) 
@@ -127,40 +153,14 @@ void sendMessage(){
   else
     {
         count++;
-        if(count>=1) digitalWrite(BUZZER, LOW);
-        if(count>=3)
+        if(count==1) digitalWrite(BUZZER, LOW);
+        if(count>=8) // 800mS before de next reading
         {
            count=0;
-           taskSendMessage.disable();   // Leer tarjeta
-           taskReadRFID.enable();     // Desactivar sensor
+           taskSendMessage.disable();   // Turnoff this task
+           taskReadRFID.enable();     // Re-enable sensor
         }
      }
-}
-
-void wtd(){
-  static short watchCount, first;
-  char strBuf[40];
-
-  if(mesh.isConnected(MASTER))
-  {
-    digitalWrite(LED_BUILTIN, !HIGH);
-    watchCount = 0;
-    if(!first){
-      taskSendMessage.enable();
-      Serial.println("Master online");
-      first = 1;
-    }    
-  }
-  else
-  {
-    digitalWrite(LED_BUILTIN, !LOW);
-    taskSendMessage.disable();
-    first = 0;
-    watchCount++;
-    if(watchCount>=wtd_rest) ESP.reset();
-    sprintf(strBuf, "Master not found! Watchdog Count: %d of %d", watchCount, wtd_rest);
-    Serial.println(strBuf);    
-  }
 }
 
 void receivedCallback( uint32_t from, String &msg ) {
@@ -182,6 +182,7 @@ void showIndicator()
     else
     {
       digitalWrite(LRED, HIGH);
+      analogWrite(BUZZER, 10);
     }
     turn++;
   }
@@ -190,6 +191,7 @@ void showIndicator()
     turn=0;
     digitalWrite(LGRE, LOW);
     digitalWrite(LRED, LOW);
+    digitalWrite(BUZZER, LOW);
     taskIndicator.disable();
   }  
 }
