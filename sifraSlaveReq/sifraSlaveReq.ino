@@ -59,7 +59,7 @@ void setup() {
   delay(10);
 
   pinMode(LBLU, OUTPUT);
-  digitalWrite(LBLU, !LOW);
+  digitalWrite(LBLU, LOW);
   pinMode(LRED, OUTPUT);
   digitalWrite(LRED, LOW);
   pinMode(LGRE, OUTPUT);
@@ -101,7 +101,7 @@ void wtd(){
 
   if(mesh.isConnected(MASTER))
   {
-    digitalWrite(LBLU, !HIGH);
+    digitalWrite(LBLU, HIGH);
     watchCount = 0;
     if(!first){
       taskReadRFID.enable();
@@ -111,7 +111,7 @@ void wtd(){
   }
   else
   {
-    digitalWrite(LBLU, !LOW);
+    digitalWrite(LBLU, LOW);
     taskReadRFID.disable();
     first = 0;
     watchCount++;
@@ -190,7 +190,8 @@ void receivedCallback( uint32_t from, String &msg ) {
   turn_buzzer=0;
   Serial.printf("Received from %u msg=%s\n", from, msg.c_str());
   access = msg.toInt();
-  taskIndicator.enable();
+  digitalWrite(LBLU, LOW);
+  taskIndicator.enable();  
 }
 
 void showIndicator()
@@ -216,6 +217,7 @@ void showIndicator()
     digitalWrite(LGRE, LOW);
     digitalWrite(LRED, LOW);
     digitalWrite(BUZZER, LOW);
+    digitalWrite(LBLU, HIGH);
     taskIndicator.disable();
   }  
 }
