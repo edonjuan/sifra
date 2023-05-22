@@ -101,7 +101,7 @@ def query(**kwargs):
                 "(uid,matricula,estatus)"
                 "VALUES(%s,%s,%s);"
             )
-            data = (uid,matricula,"activo")
+            data = (uid,matricula,1)
             cursor.execute(query,data)
             conexion.commit()
             print("Registro exitoso")
@@ -115,25 +115,21 @@ def query(**kwargs):
             query=(
                 "Select * From usuarios where uid=%s and estatus=%s"
             )
-            data = (uid,"activo")
+            data = (uid,1)
             cursor.execute(query,data)
             response = cursor.fetchall()
+            #print(len(response))
             puertoSerial.flush()
             if (len(response)==0):
                 print('''
 
-NO HAY REGISTRO
+El usuario no est      registrado
 
 ''')
                 msg = mac+",0\n"
                 msg = msg.encode('utf-8')
                 puertoSerial.write(b''+msg)
             elif (len(response)!=0):
-                print('''
-
-SE REGISTRO EN BITACORA
-
-''')
                 msg = mac+",1\n"
                 msg = msg.encode('utf-8')
                 puertoSerial.write(b''+msg)
@@ -141,9 +137,9 @@ SE REGISTRO EN BITACORA
                 cursor.execute(query)
                 acceso = cursor.fetchone()
                 #print(acceso[0])
-
                 query=("Select id_lugar from lugares where mac=%s")
                 data = (mac,)
+                borrar = cursor.fetchall()
                 cursor.execute(query,data)
                 id_lugar = cursor.fetchone()
                 #print(id_lugar)
@@ -152,15 +148,16 @@ SE REGISTRO EN BITACORA
                 cursor.execute(query,data)
                 id_usuario = cursor.fetchone()
                 #print(id_usuario)
-                if (acceso[0] == "Libre"):
+                if (acceso[0] == 1):
                     #print("ESTOY EN EL IF DE BITACORAS")
                     estatus_acceso = "Permitido"
                     erase = cursor.fetchall()
                     query = ("Insert into bitacoras (id_usuario,id_lugar,estatus_acceso) Values (%s,%s,%s)")
                     data = (id_usuario[0],id_lugar[0],estatus_acceso)
                     cursor.execute(query,data)
+                    print("Se registro en Bitacora")
                     conexion.commit()
-                elif (acceso[0] == "Restringido"):
+                elif (acceso[0] == 0):
                     estatus_acceso = "Denegado"
                     erase = cursor.fetchall()
                     query = ()
@@ -176,13 +173,13 @@ while(True):
     try:
         #Intanciar puerto serial
         puertoSerial = serial.Serial('/dev/ttyUSB0', 9600)
-        #Reliazar la conexión con la BD.
+        #Reliazar la conexi      n con la BD.
         conexion = mysql.connector.connect(host='127.0.0.1', port=3306,user='root', passwd='admin#2022', db="beta")
         cursor = conexion.cursor()
 
         if conexion.is_connected() and estado == False:
-            print("CONEXIÓN EXITOSA")
-            #Mostrar la información del servidor
+            print("CONEXI   ^sN EXITOSA")
+            #Mostrar la informaci      n del servidor
             info_server = conexion.get_server_info()
             print(info_server)
             cursor.execute("SELECT DATABASE()")
@@ -190,7 +187,7 @@ while(True):
             print("Conectado a la base de datos: {}".format(row))
             estado = True
         elif conexion.is_connected() == False:
-            print("FALLO LA CONEXIÓN")
+            print("FALLO LA CONEXI   ^sN")
             estado = False
 
         if estado == True:
@@ -211,3 +208,4 @@ while(True):
         break
     except Exception as e:
         print(e)
+
