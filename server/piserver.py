@@ -174,7 +174,7 @@ while(True):
         #Intanciar puerto serial
         puertoSerial = serial.Serial('/dev/ttyUSB0', 9600)
         #Reliazar la conexi      n con la BD.
-        conexion = mysql.connector.connect(host='127.0.0.1', port=3306,user='root', passwd='admin#2022', db="beta")
+        conexion = mysql.connector.connect(host='127.0.0.1', port=3306,user='root', passwd='admin#2022', db="rfid")
         cursor = conexion.cursor()
 
         if conexion.is_connected() and estado == False:
