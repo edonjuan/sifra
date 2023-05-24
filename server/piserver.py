@@ -57,7 +57,7 @@ def query(**kwargs):
         try:
             uid = kwargs["uid"]
             query=(
-                "Select * from usuarios where uid = %s"
+                "Select * from alumno where uid = %s"
             )
             data = (uid,)
             cursor.execute(query,data)
@@ -78,7 +78,7 @@ def query(**kwargs):
             erase = cursor.fetchall()
             matricula = kwargs["matricula"]
             query=(
-                "Select * From usuarios where matricula=%s"
+                "Select * from alumno where matricula=%s"
             )
             data = (matricula, )
             cursor.execute(query,data)
@@ -97,7 +97,7 @@ def query(**kwargs):
             uid = kwargs["uid"]
             matricula = kwargs["matricula"]
             query = (
-                "INSERT INTO usuarios"
+                "INSERT INTO alumno"
                 "(uid,matricula,estatus)"
                 "VALUES(%s,%s,%s);"
             )
@@ -113,7 +113,7 @@ def query(**kwargs):
             uid = kwargs["uid"]
             mac = kwargs["mac"]
             query=(
-                "Select * From usuarios where uid=%s and estatus=%s"
+                "Select * From alumno where uid=%s and estatus=%s"
             )
             data = (uid,1)
             cursor.execute(query,data)
@@ -133,17 +133,17 @@ El usuario no est      registrado
                 msg = mac+",1\n"
                 msg = msg.encode('utf-8')
                 puertoSerial.write(b''+msg)
-                query=("Select tipo_acceso from lugares")
+                query=("Select tipo_acceso from lugar")
                 cursor.execute(query)
                 acceso = cursor.fetchone()
                 #print(acceso[0])
-                query=("Select id_lugar from lugares where mac=%s")
+                query=("Select id_lugar from lugare where mac=%s")
                 data = (mac,)
                 borrar = cursor.fetchall()
                 cursor.execute(query,data)
                 id_lugar = cursor.fetchone()
                 #print(id_lugar)
-                query=("Select id from usuarios where uid=%s")
+                query=("Select id_alumno from alumno where uid=%s")
                 data = (uid,)
                 cursor.execute(query,data)
                 id_usuario = cursor.fetchone()
@@ -161,7 +161,7 @@ El usuario no est      registrado
                     estatus_acceso = "Denegado"
                     erase = cursor.fetchall()
                     query = ()
-                    query = ("Insert into bitacoras (id_usuario,id_lugar,estatus_acceso) Values (%s,%s,%s)")
+                    query = ("Insert into bitacoras (id_alumno,id_lugar,estatus_acceso) Values (%s,%s,%s)")
                     data = (id_usuario[0],id_lugar[0],estatus_acceso)
                     cursor.execute(query,data)
                     conexion.commit()
