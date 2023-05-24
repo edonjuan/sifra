@@ -196,7 +196,7 @@ while(True):
             msg = json.loads(puertoSerial.readline())
             #imprimir el json que se recibe
             #print(msg)
-            if msg["type"]=="register":
+            if msg["type"]=="request":
                 register()
             elif msg["type"]=="query":
                 uid = msg["uid"]
