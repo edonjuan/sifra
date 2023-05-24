@@ -152,7 +152,7 @@ El usuario no est      registrado
                     #print("ESTOY EN EL IF DE BITACORAS")
                     estatus_acceso = "Permitido"
                     erase = cursor.fetchall()
-                    query = ("Insert into bitacoras (id_usuario,id_lugar,estatus_acceso) Values (%s,%s,%s)")
+                    query = ("Insert into bitacoras (id_alumno,id_lugar,estatus_acceso) Values (%s,%s,%s)")
                     data = (id_usuario[0],id_lugar[0],estatus_acceso)
                     cursor.execute(query,data)
                     print("Se registro en Bitacora")
