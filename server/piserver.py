@@ -137,7 +137,7 @@ El usuario no est      registrado
                 cursor.execute(query)
                 acceso = cursor.fetchone()
                 #print(acceso[0])
-                query=("Select id_lugar from lugare where mac=%s")
+                query=("Select id_lugar from lugar where mac=%s")
                 data = (mac,)
                 borrar = cursor.fetchall()
                 cursor.execute(query,data)
