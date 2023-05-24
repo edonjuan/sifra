@@ -24,7 +24,7 @@ import mysql.connector
 
 def register():
     uid = msg["uid"]
-    matricula = msg["mat"]
+    matricula = int(input("Ingrese su matricula: "))
     mac = msg["mac"]
     #Se debe verificar la existencia o no del UID
     response=query(type=1,uid=uid)
