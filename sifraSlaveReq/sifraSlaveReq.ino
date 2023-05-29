@@ -13,8 +13,8 @@
 #define SS_PIN  2     // RC522_SDA
 #define BUZZER 10
 #define SELECT 15
-#define LRED 4
-#define LGRE 5
+#define LRED 5
+#define LGRE 4
 #define LBLU 16
 
 // SW
