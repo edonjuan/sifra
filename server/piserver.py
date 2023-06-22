@@ -22,6 +22,18 @@ import mysql.connector
             print(x)
 '''
 
+def puertos_seriales():
+    ports = ['/dev/ttyUSB%s' % (i + 1) for i in range(-1,20,1)]
+    encontrados = []
+    for port in ports:
+        try:
+            s = serial.Serial(port)
+            s.close()
+            encontrados.append(port)
+        except (OSError, serial.SerialException):
+            pass
+    return encontrados
+
 def register():
     uid = msg["uid"]
     matricula = int(input("Ingrese su matricula: "))
@@ -172,11 +184,20 @@ estado = False
 while(True):
     try:
         #Intanciar puerto serial
-        puertoSerial = serial.Serial('/dev/ttyUSB0', 9600)
+        #Escanear los puertos activos, para asegurar que el sistema funcione cuadno se reinicie por corte de luz
+        puertos = puertos_seriales()
+        #Obtener el puerto activo
+        puerto = puertos[0]
+        puertoSerial = serial.Serial(puerto, 9600)
         #Reliazar la conexi      n con la BD.
         conexion = mysql.connector.connect(host='127.0.0.1', port=3306,user='root', passwd='admin#2022', db="rfid")
         cursor = conexion.cursor()
-
+    except KeyboardInterrupt:
+        break
+    except Exception as e:
+        print(e)
+    
+    try:
         if conexion.is_connected() and estado == False:
             print("CONEXI   ^sN EXITOSA")
             #Mostrar la informaci      n del servidor
