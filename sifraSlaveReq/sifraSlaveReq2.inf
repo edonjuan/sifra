@@ -1,0 +1,53 @@
+
+PCB Wizard 3 Gerber Export
+--------------------------
+
+Created : 30/05/2023 11:35:35 a. m.
+Source  : PCB Wizard 3.50 (28 Oct 2004)
+Design  : C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveReq\sifraSlaveReq2.pcb
+Title   : 
+Author  : 
+Company : 
+
+RS-274X (extended) Gerber export.
+2.3 format, inches, absolute.
+No zero supression.
+Aperture table defined in Gerber file.
+
+----
+
+File: "C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveReq\sifraSlaveReq2.gb0"
+
+  Board outline layer
+
+  D-Code   Type
+  D10      Circle .020
+
+----
+
+File: "C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveReq\sifraSlaveReq2.gb1"
+
+  Bottom copper (solder side) layer
+
+  D-Code   Type
+  D10      Oval .070 .120
+  D11      Oval .120 .070
+  D12      Circle .090
+  D13      Circle .100
+  D14      Oval .075 .110
+  D15      Circle .060
+  D16      Circle .130
+  D17      Circle .070
+
+----
+
+File: "C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveReq\sifraSlaveReq2.drl"
+
+  Drill hole layer
+
+  T-Code   Size
+  T01      .020
+
+----
+
+End of report.
