@@ -2,6 +2,7 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include <painlessMesh.h>
+#include <Adafruit_NeoPixel.h> 
 
 // NETWORK
 #define   MESH_PREFIX     "AccessCTRL"
@@ -9,25 +10,24 @@
 #define   MESH_PORT       5555
 
 // HARDWARE
-#define RST_PIN  0    // RC522_RESET
-#define SS_PIN  2     // RC522_SDA
-#define BUZZER 10
-#define SELECT 15
-#define LRED 4
-#define LGRE 5
-#define LBLU 16
+#define RST_PIN           4     
+#define SS_PIN            16    
+#define BUZZER            0
+#define SELECT            5
+#define NEOPIXELPIN       2
+#define NEOPIXELLEDS      4
 
 // SW
 #define MASTER    3822969472  //alfa
 #define sensor_rate 50  // milis
-#define mat_capture  10
 #define msg_rate    400
 #define indicator   500
 #define sound       150
 #define wtd_rate    10  // seconds  
-#define wtd_rest    3
+#define wtd_rest    4
 
 // Objetcts
+Adafruit_NeoPixel neo = Adafruit_NeoPixel(NEOPIXELLEDS, NEOPIXELPIN, NEO_GRB + NEO_KHZ800); 
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 Scheduler userScheduler;
 painlessMesh  mesh;
@@ -35,6 +35,8 @@ painlessMesh  mesh;
 // Global variables
 unsigned int access;
 unsigned int mac;
+String uid;
+short turn_buzzer;
 
 // Functions structure
 void readRFID(); 
@@ -44,56 +46,49 @@ void wtd();
 void showIndicator();
 void soundBuzzer();
 void matCapture();
+void allColor(short r, short g, short b);
 
 // Task declaration
 Task taskReadRFID(TASK_MILLISECOND *sensor_rate, TASK_FOREVER, &readRFID);
 Task taskSendMessage(TASK_MILLISECOND *msg_rate, TASK_FOREVER, &sendMessage);
-Task taskSendRegister(TASK_MILLISECOND *msg_rate, TASK_FOREVER, &sendRegister);
-Task taskMatCapture(TASK_MILLISECOND *mat_capture, TASK_FOREVER, &matCapture);
 Task taskWatchDog(TASK_SECOND *wtd_rate, TASK_FOREVER, &wtd);  
 Task taskIndicator(TASK_MILLISECOND *indicator, TASK_FOREVER, &showIndicator);  
 Task taskBuzzer(TASK_MILLISECOND *sound, TASK_FOREVER, &soundBuzzer);  
 
 void setup() {
   //HW
-  Serial.begin(9600); //Iniciamos la comunicación  serial
+  Serial.begin(9600);
   delay(10);
 
-  pinMode(LBLU, OUTPUT);
-  digitalWrite(LBLU, !LOW);
-  pinMode(LRED, OUTPUT);
-  digitalWrite(LRED, LOW);
-  pinMode(LGRE, OUTPUT);
-  digitalWrite(LGRE, LOW);
   pinMode(BUZZER, OUTPUT);
   digitalWrite(BUZZER, LOW);
-  pinMode(SELECT, INPUT);
+  pinMode(SELECT, INPUT_PULLUP);
+
+  neo.begin();             
+  neo.setBrightness(255);
+  allColor(255,255,0);  // Yellow
   
-  SPI.begin();        //Iniciamos el Bus SPI
-  mfrc522.PCD_Init(); // Iniciamos  el MFRC522
+  SPI.begin();
+  mfrc522.PCD_Init();
 
   // Network
   mesh.init( MESH_PREFIX, MESH_PASSWORD, &userScheduler, MESH_PORT );
   mesh.onReceive(&receivedCallback);
   delay(5000);
-  mac = mesh.getNodeId();
+  mac = mesh.getNodeId();  
 
   // SW
   userScheduler.addTask(taskReadRFID);
   userScheduler.addTask(taskSendMessage);
-  userScheduler.addTask(taskSendRegister);
   userScheduler.addTask(taskWatchDog);
   userScheduler.addTask(taskIndicator);
   userScheduler.addTask(taskBuzzer);
-  userScheduler.addTask(taskMatCapture);
 
   taskWatchDog.enable(); 
   taskReadRFID.disable();
   taskSendMessage.disable();   
-  taskSendRegister.disable();   
   taskIndicator.disable();
   taskBuzzer.disable();
-  taskMatCapture.disable();  
 }
 
 void loop() {
@@ -106,7 +101,7 @@ void wtd(){
 
   if(mesh.isConnected(MASTER))
   {
-    digitalWrite(LBLU, !HIGH);
+    allColor(0,0,255);  // Blue
     watchCount = 0;
     if(!first){
       taskReadRFID.enable();
@@ -116,7 +111,7 @@ void wtd(){
   }
   else
   {
-    digitalWrite(LBLU, !LOW);
+    allColor(255,255,0);  // Yellow
     taskReadRFID.disable();
     first = 0;
     watchCount++;
@@ -126,8 +121,6 @@ void wtd(){
   }
 }
 
-String ident;
-
 void readRFID() {
   if ( mfrc522.PICC_IsNewCardPresent()) 
      { 
@@ -135,28 +128,19 @@ void readRFID() {
          if ( mfrc522.PICC_ReadCardSerial()) 
          {            
             for (byte i = 0; i < mfrc522.uid.size; i++) {
-                if(mfrc522.uid.uidByte[i] < 0x10) ident+= "0";
-                ident += String(mfrc522.uid.uidByte[i], HEX);
+                if(mfrc522.uid.uidByte[i] < 0x10) uid+= "0";
+                uid += String(mfrc522.uid.uidByte[i], HEX);
             }
-            ident.toUpperCase();              
-            mfrc522.PICC_HaltA();    
+            uid.toUpperCase();            
+            mfrc522.PICC_HaltA();
           }
-          short BTN = digitalRead(SELECT);
-          if(BTN)
-          {
-            Serial.print("Ingrese Matricula: ");
-            digitalWrite(LRED, HIGH);
-            digitalWrite(LGRE, HIGH);
-            taskMatCapture.enable();
-          }
-          else    taskSendMessage.enable();    
+          taskSendMessage.enable();
           taskReadRFID.disable();
       }
 }
 
-short turn_buzzer;
-
 void soundBuzzer() {  
+  //pinMode(BUZZER, OUTPUT);
   if(!turn_buzzer)
   {
     digitalWrite(BUZZER, HIGH);
@@ -170,43 +154,20 @@ void soundBuzzer() {
   }   
 }
 
-
-char arreglo[15];
-
-void matCapture(){  
-  static int pointer;
-  
-  if (Serial.available() > 0) {
-    // read the incoming string:
-    char data = Serial.read(); 
-    Serial.print(data);   // MIRROW
-    if((data == '\r')||(data == '\n'))
-    {
-      digitalWrite(LGRE, LOW);
-      digitalWrite(LRED, LOW);
-      pointer = 0;
-      while (Serial.available()>0)  Serial.read();
-      taskSendRegister.enable();   
-      taskMatCapture.disable();      
-    }
-    else
-    {
-      arreglo[pointer] = data;
-      pointer++;
-    }
-}
-}
-
 void sendMessage(){
   static short turn;
 
   if(!turn)
   {
-    StaticJsonDocument<500> doc; 
-    doc["type"] = "query";
+    StaticJsonDocument<100> doc; 
+
+    short BTN = digitalRead(SELECT);
+    if(!BTN) doc["type"] = "request";  // request    //     CAMBIAR AQUI 2/2
+    else doc["type"] = "query";
+    
     doc["mac"] = String(mac);
-    doc["uid"] = ident;
-    ident = "";
+    doc["uid"] = uid;
+    uid = "";
 
     serializeJsonPretty(doc, Serial);
     Serial.println();  
@@ -224,34 +185,13 @@ void sendMessage(){
   }
 }
 
-void sendRegister(){ 
-  StaticJsonDocument<500> doc; 
-  doc["type"] = "register";
-  doc["mac"] = String(mac);
-  doc["uid"] = ident;
-  doc["mat"] = arreglo;
-  ident = "";
-  memset(arreglo,0,sizeof(arreglo));
-
-
-  Serial.println();
-  serializeJsonPretty(doc, Serial);
-  Serial.println();
-
-  taskReadRFID.enable();
-  taskSendRegister.disable(); 
-  //String output;
-  //serializeJson(doc, output);
-  //mesh.sendSingle(MASTER, output);
-}
-
 void receivedCallback( uint32_t from, String &msg ) {
   digitalWrite(BUZZER, LOW);
   taskBuzzer.disable();
   turn_buzzer=0;
   Serial.printf("Received from %u msg=%s\n", from, msg.c_str());
   access = msg.toInt();
-  taskIndicator.enable();
+  taskIndicator.enable();  
 }
 
 void showIndicator()
@@ -262,11 +202,11 @@ void showIndicator()
   {
     if(access)
     {
-      digitalWrite(LGRE, HIGH);
+      allColor(0,255,0);  // Green
     }
     else
     {
-      digitalWrite(LRED, HIGH);
+      allColor(255,0,0);  // Red
       analogWrite(BUZZER, 10);
     }
     turn=1;
@@ -274,9 +214,17 @@ void showIndicator()
   else
   {
     turn=0;
-    digitalWrite(LGRE, LOW);
-    digitalWrite(LRED, LOW);
     digitalWrite(BUZZER, LOW);
+    allColor(0,0,255);  // Blue
     taskIndicator.disable();
-  }  
+  }
+}
+
+void allColor(short r, short g, short b)
+{
+  for(unsigned i=0; i<NEOPIXELLEDS; i++)
+  {
+    neo.setPixelColor(i,r,g,b); // (POS; R;G;B)
+  }
+  neo.show();
 }
