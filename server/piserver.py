@@ -190,7 +190,7 @@ while(True):
         puerto = puertos[0]
         puertoSerial = serial.Serial(puerto, 9600)
         #Reliazar la conexi      n con la BD.
-        conexion = mysql.connector.connect(host='127.0.0.1', port=3306,user='root', passwd='admin#2022', db="rfid")
+        conexion = mysql.connector.connect(host='127.0.0.1', port=3306,user='root', passwd='admin#2022', db='rfid')
         cursor = conexion.cursor()
     except KeyboardInterrupt:
         break
@@ -228,5 +228,5 @@ while(True):
         conexion.close()
         break
     except Exception as e:
-        print(e)
+        print('type-->',type(e),' msg-->',e)
 
