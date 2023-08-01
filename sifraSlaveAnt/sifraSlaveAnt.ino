@@ -10,10 +10,10 @@
 #define   MESH_PORT       5555
 
 // HARDWARE
-#define RST_PIN           4     
-#define SS_PIN            16    
-#define BUZZER            0
-#define SELECT            5
+#define SS_PIN            16 
+#define RST_PIN           0     
+#define SELECT            5   
+#define BUZZER            4
 #define NEOPIXELPIN       2
 #define NEOPIXELLEDS      4
 
@@ -140,7 +140,6 @@ void readRFID() {
 }
 
 void soundBuzzer() {  
-  //pinMode(BUZZER, OUTPUT);
   if(!turn_buzzer)
   {
     digitalWrite(BUZZER, HIGH);
