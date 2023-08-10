@@ -15,12 +15,12 @@ FROM mi_tabla
 5. Seleccionar dos fechas sin seleccionar matricula.
 */
 
-if(isset($_POST['Filtrar'])){
+if (isset($_POST['Filtrar'])) {
   $matricula = $_POST['Matricula'];
   $fechaInicio = $_POST['FechaInicio'];
   $fechaFinal = $_POST['FechaFinal'];
   // Caso 1
-  if($matricula != "" and $fechaInicio == "" and $fechaFinal == ""){
+  if ($matricula != "" and $fechaInicio == "" and $fechaFinal == "") {
     $matricula = $_POST['Matricula'];
     $filter = "SELECT CONVERT_TZ(fecha,'+00:00','-06:00') as fecha, nombre,matricula from bitacoras
            inner join lugar on lugar.id_lugar = bitacoras.id_lugar 
@@ -30,10 +30,10 @@ if(isset($_POST['Filtrar'])){
     $query = mysqli_query($connect, $filter);
   }
   // Caso 2 
-  if($matricula != "" and ($fechaInicio != "" or $fechaFinal != "") and !($fechaInicio != "" and $fechaFinal != "")){
-    if($fechaInicio != ""){
+  if ($matricula != "" and ($fechaInicio != "" or $fechaFinal != "") and !($fechaInicio != "" and $fechaFinal != "")) {
+    if ($fechaInicio != "") {
       $fecha = $fechaInicio;
-    }else{
+    } else {
       $fecha = $fechaFinal;
     }
     $filter = "SELECT CONVERT_TZ(fecha,'+00:00','-06:00') as fecha, nombre,matricula from bitacoras
@@ -45,10 +45,10 @@ if(isset($_POST['Filtrar'])){
   }
   // Caso 3
   // Validar fechas
-  
+
   $fecha1 = strtotime($fechaInicio);
   $fecha2 = strtotime($fechaFinal);
-  if($fecha1 > $fecha2){
+  if ($fecha1 > $fecha2) {
     echo '
       <script>
         alert("La fecha Inicial no puede ser mayor a la fecha final");
@@ -56,7 +56,7 @@ if(isset($_POST['Filtrar'])){
       </script>
     ';
   }
-  if($matricula != "" and $fechaInicio != "" and $fechaFinal != ""){
+  if ($matricula != "" and $fechaInicio != "" and $fechaFinal != "") {
     $filter = "SELECT CONVERT_TZ(fecha,'+00:00','-06:00') as fecha, nombre,matricula from bitacoras
            inner join lugar on lugar.id_lugar = bitacoras.id_lugar 
            inner join alumno on bitacoras.id_alumno = alumno.id_alumno
@@ -65,10 +65,10 @@ if(isset($_POST['Filtrar'])){
     $query = mysqli_query($connect, $filter);
   }
   // Caso 4
-  if($matricula == "" and ($fechaInicio != "" or $fechaFinal != "") and !($fechaInicio != "" and $fechaFinal != "")){
-    if($fechaInicio != ""){
+  if ($matricula == "" and ($fechaInicio != "" or $fechaFinal != "") and !($fechaInicio != "" and $fechaFinal != "")) {
+    if ($fechaInicio != "") {
       $fecha = $fechaInicio;
-    }else{
+    } else {
       $fecha = $fechaFinal;
     }
     $filter = "SELECT CONVERT_TZ(fecha,'+00:00','-06:00') as fecha, nombre,matricula from bitacoras
@@ -80,10 +80,10 @@ if(isset($_POST['Filtrar'])){
   }
   // Caso 5
   // Validar fechas
-  
+
   $fecha1 = strtotime($fechaInicio);
   $fecha2 = strtotime($fechaFinal);
-  if($fecha1 > $fecha2){
+  if ($fecha1 > $fecha2) {
     echo '
       <script>
         alert("La fecha Inicial no puede ser mayor a la fecha final");
@@ -91,7 +91,7 @@ if(isset($_POST['Filtrar'])){
       </script>
     ';
   }
-  if($matricula == "" and $fechaInicio != "" and $fechaFinal != ""){
+  if ($matricula == "" and $fechaInicio != "" and $fechaFinal != "") {
     $filter = "SELECT CONVERT_TZ(fecha,'+00:00','-06:00') as fecha, nombre,matricula from bitacoras
            inner join lugar on lugar.id_lugar = bitacoras.id_lugar 
            inner join alumno on bitacoras.id_alumno = alumno.id_alumno
@@ -100,14 +100,14 @@ if(isset($_POST['Filtrar'])){
     $query = mysqli_query($connect, $filter);
   }
   // Caso 6
-  if($matricula == "" and $fechaInicio == "" and $fechaFinal == ""){
+  if ($matricula == "" and $fechaInicio == "" and $fechaFinal == "") {
     $filter = "SELECT CONVERT_TZ(fecha,'+00:00','-06:00') as fecha, nombre,matricula from bitacoras
            inner join lugar on lugar.id_lugar = bitacoras.id_lugar 
            inner join alumno on bitacoras.id_alumno = alumno.id_alumno
            order by fecha DESC";
     $query = mysqli_query($connect, $filter);
   }
-}else{
+} else {
   $data = "SELECT CONVERT_TZ(fecha,'+00:00','-06:00') as fecha, nombre,matricula from bitacoras
            inner join lugar on lugar.id_lugar = bitacoras.id_lugar 
            inner join alumno on bitacoras.id_alumno = alumno.id_alumno
@@ -123,17 +123,24 @@ if(isset($_POST['Filtrar'])){
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Frida</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
 <body>
   <div class="container-fluid">
-    <h1>Bitacoras</h1>    
     <div class="container">
       <div class="row">
+        <figure class="text-center pt-5">
+          <p class="h1">Bitacora Digital</p>
+        </figure>
+      </div>
+      <div class="row mt-n1">
         <form method="POST">
-          <div class="row">
+          <div class="row align-items-center">
+            <div class="col-2">
+              <img src="/img/Innovation Lab Network.png" class="img-fluid" alt="laboratoryLogo" style="height:150px;width:150px">
+            </div>
             <div class="col">
               <div class="input-group input-group-sm mb-3">
                 <span class="input-group-text" id="inputGroup-sizing-sm">Matricula</span>
@@ -155,7 +162,7 @@ if(isset($_POST['Filtrar'])){
       <table class="table">
         <thead>
           <tr class="table-primary">
-            <th>fecha</th>
+            <th>Fecha</th>
             <th>Matricula</th>
             <th>Lugar </th>
           </tr>
