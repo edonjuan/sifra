@@ -2,9 +2,9 @@
 PCB Wizard 3 Gerber Export
 --------------------------
 
-Created : 17/07/2023 09:58:24 a. m.
+Created : 01/08/2023 11:07:40 a. m.
 Source  : PCB Wizard 3.50 (28 Oct 2004)
-Design  : C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveAnt\sifraSlaveAntenna6.pcb
+Design  : C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveAnt\sifraSlaveAnt.pcb
 Title   : 
 Author  : 
 Company : 
@@ -16,7 +16,7 @@ Aperture table defined in Gerber file.
 
 ----
 
-File: "C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveAnt\sifraSlaveAntenna6.gb0"
+File: "C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveAnt\sifraSlaveAnt.gb0"
 
   Board outline layer
 
@@ -25,7 +25,7 @@ File: "C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveAnt\sifraSlaveAntenna6
 
 ----
 
-File: "C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveAnt\sifraSlaveAntenna6.gb1"
+File: "C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveAnt\sifraSlaveAnt.gb1"
 
   Bottom copper (solder side) layer
 
@@ -39,7 +39,7 @@ File: "C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveAnt\sifraSlaveAntenna6
 
 ----
 
-File: "C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveAnt\sifraSlaveAntenna6.drl"
+File: "C:\Users\edonjuan\Documents\GitHub\sifra\sifraSlaveAnt\sifraSlaveAnt.drl"
 
   Drill hole layer
 

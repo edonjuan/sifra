@@ -11,9 +11,9 @@
 
 // HARDWARE
 #define SS_PIN            16 
-#define RST_PIN           0     
+#define RST_PIN           0     //before 4
 #define SELECT            5   
-#define BUZZER            4
+#define BUZZER            4     //before 0
 #define NEOPIXELPIN       2
 #define NEOPIXELLEDS      4
 
