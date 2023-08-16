@@ -1,10 +1,14 @@
 // LIBRARIES
 #include "painlessMesh.h"
+#include <Adafruit_NeoPixel.h> 
 
 // NETWORK
-#define   MESH_PREFIX     "AccessCTRL"
-#define   MESH_PASSWORD   "AccessCTRL1"
+#define   MESH_PREFIX     "UTEQ_RegistroRFID"
+#define   MESH_PASSWORD   "uteqintel"
 #define   MESH_PORT       5555
+
+#define   NEOPIXELPIN     D4
+#define   NEOPIXELLEDS    1
 
 //SW
 #define node_rate 5
@@ -14,6 +18,7 @@
 // Objects
 Scheduler userScheduler;
 painlessMesh  mesh;
+Adafruit_NeoPixel neo = Adafruit_NeoPixel(NEOPIXELLEDS, NEOPIXELPIN, NEO_GRB + NEO_KHZ800); 
 
 // Functions structure
 void node_task();
@@ -30,6 +35,12 @@ void setup() {
   
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, !LOW);
+
+  // NeoPixel
+  neo.begin();             
+  neo.setBrightness(255);
+  neo.setPixelColor(0,255,0,0); // (POS; R;G;B)
+  neo.show();
 
   mesh.init( MESH_PREFIX, MESH_PASSWORD, &userScheduler, MESH_PORT );
   mesh.onReceive(&receivedCallback);
@@ -76,6 +87,8 @@ void node_task(){
 
   if(nodes.size() == 0)
   {
+    neo.setPixelColor(0,255,0,0); // (POS; R;G;B)
+    neo.show(); 
     watchCount++;
     if(watchCount>=wtd_rest) ESP.reset();
     sprintf(strBuf, "No devices found! Watchdog Count: %d of %d", watchCount, wtd_rest);
@@ -84,6 +97,7 @@ void node_task(){
   }
   else
   {
-    digitalWrite(LED_BUILTIN, !HIGH);   
+    neo.setPixelColor(0,0,0,255); // (POS; R;G;B)
+    neo.show(); 
   }
 }

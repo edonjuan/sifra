@@ -5,8 +5,8 @@
 #include <Adafruit_NeoPixel.h> 
 
 // NETWORK
-#define   MESH_PREFIX     "AccessCTRL"
-#define   MESH_PASSWORD   "AccessCTRL1"
+#define   MESH_PREFIX     "UTEQ_RegistroRFID"
+#define   MESH_PASSWORD   "uteqintel"
 #define   MESH_PORT       5555
 
 // HARDWARE
@@ -18,7 +18,7 @@
 #define NEOPIXELLEDS      4
 
 // SW
-#define MASTER    3822969472  //alfa
+#define MASTER    693427594
 #define sensor_rate 50  // milis
 #define msg_rate    400
 #define indicator   500
